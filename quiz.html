@@ -17,19 +17,27 @@
         body {
             background-color: white;
             font-family: "Montserrat", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
 
         .panel {
-            margin-top: 8%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             color: navy;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
         }
 
         .question {
-            text-align: center;
             font-size: 30px;
             width: 50%;
             margin-bottom: 20px;
@@ -45,14 +53,14 @@
         }
 
         button {
-            margin-right: 75px;
-            margin-top: 8%;
             font-size: 20px;
             padding: 10px 20px;
             background-color: #4f98c2;
             color: white;
             border: none;
             cursor: pointer;
+            text-align: center;
+            margin-top: 20px;
         }
 
         button:hover {
@@ -75,6 +83,14 @@
             background-color: lightcoral;
             color: darkred;
         }
+
+        #donation-section {
+            margin-bottom: 20px;
+        }
+
+        .choices {
+            text-align: center;
+        }
     </style>
 
 </head>
@@ -83,18 +99,21 @@
     <div class="panel">
         <h1>Country Flags Quiz</h1>
 
-        <p>Thank you for considering a donation to the Country Flags Quiz Foundation.</p>
-        <p>
-            <label for="name">Donation amount (CAD) $</label>
-            <input type="text" id="donation" name="donation_amount" />
-        </p>
-        <button onclick="startQuiz()">Start</button>
+        <div id="donation-section">
+            <p>Thank you for considering a donation to the Country Flags Quiz Foundation.</p>
+            <p>
+                <label for="name">Donation amount (CAD) $</label>
+                <input type="text" id="donation" name="donation_amount" />
+            </p>
+            <button onclick="startQuiz()">Start</button>
+        </div>
 
         <div class="questions">
-            <img id="questions" src="" alt="Country Flag" width="200px" />
+            <img id="questions" src="" alt="Country Flag" width="200px" style="display: none;" />
         </div>
+        <br>
         <div class="choices" id="choices"></div>
-        <button onclick="checkAnswer()" id="button">Submit</button>
+        <button id="actionButton" onclick="submitOrNext()" style="display: none;">Submit</button>
 
         <script>
             let Questions = ["Italy.png", "Greece.png", "South_Korea.png", "France.png", "Singapore.png"];
@@ -104,16 +123,20 @@
             ["Bangladesh", "Japan", "Brazil"], ["Netherlands", "Luxembourg", "Russia"],
             ["Indonesia", "Monaco", "Poland"]];
 
-            let rightAnswers = ["Italy", "Greece", "South_Korea", "France", "Singapore"];
+            let rightAnswers = ["Italy", "Greece", "South Korea", "France", "Singapore"];
 
             let currentQuestion = 0;
             let score = 0;
+            let isNextQuestion = false;
 
             function startQuiz() {
                 const donationAmount = document.getElementById("donation").value;
                 if (!donationAmount || isNaN(donationAmount)) {
                     alert("Enter a donation amount to start the quiz.");
                 } else {
+                    document.getElementById("donation-section").style.display = "none";
+                    document.getElementById("questions").style.display = "block";
+                    document.getElementById("actionButton").style.display = "block";
                     loadQuestion();
                 }
             }
@@ -140,6 +163,16 @@
                     choices.appendChild(choicesDiv);
                 });
 
+                document.getElementById("actionButton").textContent = "Submit";
+                isNextQuestion = false;
+            }
+
+            function submitOrNext() {
+                if (isNextQuestion) {
+                    nextQuestion();
+                } else {
+                    checkAnswer();
+                }
             }
 
             function checkAnswer() {
@@ -161,28 +194,31 @@
 
                     document.querySelectorAll('input[name="answer"]').forEach(input => input.disabled = true);
 
-                    showNextButton();
+                    document.getElementById("actionButton").textContent = "Next";
+                    isNextQuestion = true;
                 } else {
                     alert("Select an answer to proceed.");
                 }
             }
 
-            function showNextButton() {
-                const nextButton = document.createElement("button");
-                nextButton.textContent = "Next Question";
-                nextButton.onclick = nextQuestion;
-                document.body.appendChild(nextButton);
-            }
-
             function nextQuestion() {
-                currentQuestion++;
-                if (currentQuestion < Questions.length) {
+                if (currentQuestion < Questions.length - 1) {
+                    currentQuestion++;
                     loadQuestion();
-                    document.body.lastChild.remove();
                 } else {
-                    const finalScoreDiv = document.createElement("div");
-                    finalScoreDiv.textContent = `Final Score: ${score}`;
-                    document.body.appendChild(finalScoreDiv);
+                    const scoreDiv = document.createElement("div");
+                    scoreDiv.textContent = `Final Score: ${score}`;
+                    scoreDiv.style.fontSize = "30px";
+                    scoreDiv.style.color = "darkslategray";
+                    scoreDiv.style.marginTop = "20px";
+                    scoreDiv.style.textAlign = "center";
+
+                    const panel = document.querySelector('.panel');
+                    panel.appendChild(scoreDiv);
+
+                    const button = document.getElementById("actionButton");
+        button.disabled = true;
+        button.style.cursor = "not-allowed";
                 }
             }
         </script>
