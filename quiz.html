@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <title>Country Flags Quiz</title>
+
+    <style>
+        body {
+            background-color: white;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        .panel {
+            margin-top: 8%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: navy;
+        }
+
+        .question {
+            text-align: center;
+            font-size: 30px;
+            width: 50%;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            font-size: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 20px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            margin-right: 75px;
+            margin-top: 8%;
+            font-size: 20px;
+            padding: 10px 20px;
+            background-color: #4f98c2;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            color: #4f98c2;
+            background-color: white;
+            border: 1px solid #4f98c2;
+        }
+
+        #score {
+            font-size: 30px;
+            color: darkslategray;
+        }
+
+        .correct {
+            background-color: lightgreen;
+            color: darkgreen;
+        }
+
+        .wrong {
+            background-color: lightcoral;
+            color: darkred;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="panel">
+        <h1>Country Flags Quiz</h1>
+
+        <p>Thank you for considering a donation to the Country Flags Quiz Foundation.</p>
+        <p>
+            <label for="name">Donation amount (CAD) $</label>
+            <input type="text" id="donation" name="donation_amount" />
+        </p>
+        <button onclick="startQuiz()">Start</button>
+
+        <div class="questions">
+            <img id="questions" src="" alt="Country Flag" width="200px" />
+        </div>
+        <div class="choices" id="choices"></div>
+        <button onclick="checkAnswer()" id="button">Submit</button>
+
+        <script>
+            let Questions = ["Italy.png", "Greece.png", "South_Korea.png", "France.png", "Singapore.png"];
+            const questions = document.getElementById("questions");
+
+            let wrongAnswers = [["Ireland", "Mexico", "Hungary"], ["Uruguay", "Finland", "Argentina"],
+            ["Bangladesh", "Japan", "Brazil"], ["Netherlands", "Luxembourg", "Russia"],
+            ["Indonesia", "Monaco", "Poland"]];
+
+            let rightAnswers = ["Italy", "Greece", "South_Korea", "France", "Singapore"];
+
+            let currentQuestion = 0;
+            let score = 0;
+
+            function startQuiz() {
+                const donationAmount = document.getElementById("donation").value;
+                if (!donationAmount || isNaN(donationAmount)) {
+                    alert("Enter a donation amount to start the quiz.");
+                } else {
+                    loadQuestion();
+                }
+            }
+
+            function loadQuestion() {
+                const choices = document.getElementById("choices");
+                const currentQuestionImg = Questions[currentQuestion];
+                questions.src = currentQuestionImg;
+
+                choices.innerHTML = "";
+                let currentChoices = [rightAnswers[currentQuestion], ...wrongAnswers[currentQuestion]];
+                currentChoices.sort(() => Math.random() - 0.5);
+
+                currentChoices.forEach((choice) => {
+                    const choicesDiv = document.createElement("div");
+                    const choicesInput = document.createElement("input");
+                    const choicesLabel = document.createElement("label");
+                    choicesInput.type = "radio";
+                    choicesInput.name = "answer";
+                    choicesInput.value = choice;
+                    choicesLabel.textContent = choice;
+                    choicesDiv.appendChild(choicesInput);
+                    choicesDiv.appendChild(choicesLabel);
+                    choices.appendChild(choicesDiv);
+                });
+
+            }
+
+            function checkAnswer() {
+                const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+                if (selectedAnswer) {
+                    const choiceLabels = document.querySelectorAll("label");
+
+                    choiceLabels.forEach(label => {
+                        if (label.textContent === rightAnswers[currentQuestion]) {
+                            label.classList.add("correct");
+                        } else if (label.previousSibling.checked) {
+                            label.classList.add("wrong");
+                        }
+                    });
+
+                    if (selectedAnswer.value === rightAnswers[currentQuestion]) {
+                        score++;
+                    }
+
+                    document.querySelectorAll('input[name="answer"]').forEach(input => input.disabled = true);
+
+                    showNextButton();
+                } else {
+                    alert("Select an answer to proceed.");
+                }
+            }
+
+            function showNextButton() {
+                const nextButton = document.createElement("button");
+                nextButton.textContent = "Next Question";
+                nextButton.onclick = nextQuestion;
+                document.body.appendChild(nextButton);
+            }
+
+            function nextQuestion() {
+                currentQuestion++;
+                if (currentQuestion < Questions.length) {
+                    loadQuestion();
+                    document.body.lastChild.remove();
+                } else {
+                    const finalScoreDiv = document.createElement("div");
+                    finalScoreDiv.textContent = `Final Score: ${score}`;
+                    document.body.appendChild(finalScoreDiv);
+                }
+            }
+        </script>
+    </div>
+
+</body>
+
+</html>
