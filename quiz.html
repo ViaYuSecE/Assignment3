@@ -89,7 +89,22 @@
         }
 
         .choices {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 20px;
+            width: 100%;
+        }
+
+        .choices div {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border: 1px solid #ccc;
             text-align: center;
+            cursor: pointer;
+        }
+
+        .choices div:hover {
+            background-color: #d0eaff;
         }
     </style>
 
@@ -98,6 +113,7 @@
 <body>
     <div class="panel">
         <h1>Country Flags Quiz</h1>
+        <div id="question-counter" style="font-size: 24px; margin-bottom: 20px;"></div>
 
         <div id="donation-section">
             <p>Thank you for considering a donation to the Country Flags Quiz Foundation.</p>
@@ -142,30 +158,35 @@
             }
 
             function loadQuestion() {
-                const choices = document.getElementById("choices");
-                const currentQuestionImg = Questions[currentQuestion];
-                questions.src = currentQuestionImg;
+    const choices = document.getElementById("choices");
+    const currentQuestionImg = Questions[currentQuestion];
+    questions.src = currentQuestionImg;
 
-                choices.innerHTML = "";
-                let currentChoices = [rightAnswers[currentQuestion], ...wrongAnswers[currentQuestion]];
-                currentChoices.sort(() => Math.random() - 0.5);
+    const questionCounter = document.getElementById("question-counter");
+    questionCounter.textContent = `Question ${currentQuestion + 1} of ${Questions.length}`;
 
-                currentChoices.forEach((choice) => {
-                    const choicesDiv = document.createElement("div");
-                    const choicesInput = document.createElement("input");
-                    const choicesLabel = document.createElement("label");
-                    choicesInput.type = "radio";
-                    choicesInput.name = "answer";
-                    choicesInput.value = choice;
-                    choicesLabel.textContent = choice;
-                    choicesDiv.appendChild(choicesInput);
-                    choicesDiv.appendChild(choicesLabel);
-                    choices.appendChild(choicesDiv);
-                });
+    choices.innerHTML = "";
+    let currentChoices = [rightAnswers[currentQuestion], ...wrongAnswers[currentQuestion]];
+    currentChoices.sort(() => Math.random() - 0.5);
 
-                document.getElementById("actionButton").textContent = "Submit";
-                isNextQuestion = false;
-            }
+    currentChoices.forEach((choice) => {
+        const choicesDiv = document.createElement("div");
+        const choicesInput = document.createElement("input");
+        const choicesLabel = document.createElement("label");
+
+        choicesInput.type = "radio";
+        choicesInput.name = "answer";
+        choicesInput.value = choice;
+
+        choicesLabel.textContent = choice;
+        choicesDiv.appendChild(choicesInput);
+        choicesDiv.appendChild(choicesLabel);
+        choices.appendChild(choicesDiv);
+    });
+
+    document.getElementById("actionButton").textContent = "Submit";
+    isNextQuestion = false;
+}
 
             function submitOrNext() {
                 if (isNextQuestion) {
@@ -217,8 +238,8 @@
                     panel.appendChild(scoreDiv);
 
                     const button = document.getElementById("actionButton");
-        button.disabled = true;
-        button.style.cursor = "not-allowed";
+                    button.disabled = true;
+                    button.style.cursor = "not-allowed";
                 }
             }
         </script>
