@@ -15,8 +15,10 @@
 
     <style>
         body {
-            background-color: white;
+            background-color: #F7FAFD;
             font-family: "Montserrat", sans-serif;
+            color: #0E3F70;
+            font-weight: 400;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -29,12 +31,16 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: navy;
+            color: #0E3F70;
             text-align: center;
         }
 
         h1 {
             margin-bottom: 20px;
+        }
+
+        p {
+            font-size: large;
         }
 
         .question {
@@ -55,33 +61,32 @@
         button {
             font-size: 20px;
             padding: 10px 20px;
-            background-color: #4f98c2;
+            background-color: #0E3F70;
             color: white;
             border: none;
             cursor: pointer;
             text-align: center;
             margin-top: 20px;
+            border: 3px solid #0E3F70;
+            border-radius: 7px;
         }
 
         button:hover {
-            color: #4f98c2;
+            color: #0E3F70;
             background-color: white;
-            border: 1px solid #4f98c2;
-        }
-
-        #score {
-            font-size: 30px;
-            color: darkslategray;
         }
 
         .correct {
-            background-color: lightgreen;
-            color: darkgreen;
+            border-color: #00794A !important;
+            color: #00794A;
+            font-weight: 600;
         }
 
         .wrong {
-            background-color: lightcoral;
-            color: darkred;
+            border-color: #9A2222 !important;
+            background-color: #F2EFF2 !important;
+            color: #9A2222;
+            font-weight: 600;
         }
 
         #donation-section {
@@ -96,15 +101,17 @@
         }
 
         .choices div {
-            background-color: #f0f0f0;
+            background-color: #ffffff;
             padding: 20px;
-            border: 1px solid #ccc;
+            border: 1px solid #D0E5F9;
+            border-radius: 7px;
+            border-width: 3px;
             text-align: center;
             cursor: pointer;
         }
 
         .choices div:hover {
-            background-color: #d0eaff;
+            background-color: #D0E5F9;
         }
     </style>
 
@@ -158,35 +165,35 @@
             }
 
             function loadQuestion() {
-    const choices = document.getElementById("choices");
-    const currentQuestionImg = Questions[currentQuestion];
-    questions.src = currentQuestionImg;
+                const choices = document.getElementById("choices");
+                const currentQuestionImg = Questions[currentQuestion];
+                questions.src = currentQuestionImg;
 
-    const questionCounter = document.getElementById("question-counter");
-    questionCounter.textContent = `Question ${currentQuestion + 1} of ${Questions.length}`;
+                const questionCounter = document.getElementById("question-counter");
+                questionCounter.textContent = `Question ${currentQuestion + 1} of ${Questions.length}`;
 
-    choices.innerHTML = "";
-    let currentChoices = [rightAnswers[currentQuestion], ...wrongAnswers[currentQuestion]];
-    currentChoices.sort(() => Math.random() - 0.5);
+                choices.innerHTML = "";
+                let currentChoices = [rightAnswers[currentQuestion], ...wrongAnswers[currentQuestion]];
+                currentChoices.sort(() => Math.random() - 0.5);
 
-    currentChoices.forEach((choice) => {
-        const choicesDiv = document.createElement("div");
-        const choicesInput = document.createElement("input");
-        const choicesLabel = document.createElement("label");
+                currentChoices.forEach((choice) => {
+                    const choicesDiv = document.createElement("div");
+                    const choicesInput = document.createElement("input");
+                    const choicesLabel = document.createElement("label");
 
-        choicesInput.type = "radio";
-        choicesInput.name = "answer";
-        choicesInput.value = choice;
+                    choicesInput.type = "radio";
+                    choicesInput.name = "answer";
+                    choicesInput.value = choice;
 
-        choicesLabel.textContent = choice;
-        choicesDiv.appendChild(choicesInput);
-        choicesDiv.appendChild(choicesLabel);
-        choices.appendChild(choicesDiv);
-    });
+                    choicesLabel.textContent = choice;
+                    choicesDiv.appendChild(choicesInput);
+                    choicesDiv.appendChild(choicesLabel);
+                    choices.appendChild(choicesDiv);
+                });
 
-    document.getElementById("actionButton").textContent = "Submit";
-    isNextQuestion = false;
-}
+                document.getElementById("actionButton").textContent = "Submit";
+                isNextQuestion = false;
+            }
 
             function submitOrNext() {
                 if (isNextQuestion) {
@@ -199,13 +206,15 @@
             function checkAnswer() {
                 const selectedAnswer = document.querySelector('input[name="answer"]:checked');
                 if (selectedAnswer) {
-                    const choiceLabels = document.querySelectorAll("label");
+                    const choicesDivs = document.querySelectorAll(".choices div");
 
-                    choiceLabels.forEach(label => {
-                        if (label.textContent === rightAnswers[currentQuestion]) {
-                            label.classList.add("correct");
-                        } else if (label.previousSibling.checked) {
-                            label.classList.add("wrong");
+                    choicesDivs.forEach(div => {
+                        const labelText = div.querySelector("label").textContent;
+
+                        if (labelText === rightAnswers[currentQuestion]) {
+                            div.classList.add("correct");
+                        } else if (div.querySelector("input").checked) {
+                            div.classList.add("wrong");
                         }
                     });
 
@@ -228,11 +237,11 @@
                     loadQuestion();
                 } else {
                     const scoreDiv = document.createElement("div");
-                    scoreDiv.textContent = `Final Score: ${score}`;
+                    scoreDiv.textContent = `Score: ${score}`;
                     scoreDiv.style.fontSize = "30px";
-                    scoreDiv.style.color = "darkslategray";
                     scoreDiv.style.marginTop = "20px";
                     scoreDiv.style.textAlign = "center";
+                    scoreDiv.style.fontWeight = "600";
 
                     const panel = document.querySelector('.panel');
                     panel.appendChild(scoreDiv);
